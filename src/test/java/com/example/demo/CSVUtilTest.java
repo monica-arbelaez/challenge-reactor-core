@@ -62,6 +62,21 @@ public class CSVUtilTest {
 
         assert listFilter.block().size() == 322;
     }
+    @Test
+    void  reactive_filtrarNacionalidadJugadores(){
+        List<Player> list = CsvUtilFile.getPlayers();
+        Flux<Player> listFlux = Flux.fromStream(list.parallelStream()).cache();
+        Mono<Map<String, Collection<Player>>> listFilter = listFlux
+                .sort((player1,player2)-> Math.max(player1.getWinners(), player2.getWinners()))
+                .distinct()
+                .collectMultimap(Player::getNational);
+                listFilter.block().forEach((k,cole)->cole.forEach(player-> System.out.println(player.toString())));
+
+//              listFilter.subscribe(System.out::println);
+//                listFilter.subscribe(System.out::println);
+
+        assert listFilter.block().size()==150;
+    }
 
 
 
